@@ -88,9 +88,9 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+    #print("Start:", problem.getStartState())
+    #print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    #print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     root = problem.getStartState()
 
     fringe = util.Stack() # stack of tuples
