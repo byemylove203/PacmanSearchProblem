@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 
+
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -86,73 +88,67 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
+    # print("Start:", problem.getStartState())
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
     "*** YOUR CODE HERE ***"
-    
-    #print("Start:", problem.getStartState())
-    #print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    #print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     root = problem.getStartState()
+    stack = util.Stack()  # stack of tuples
+    visited = set()  # set of positions
+    stack.push((root, []))
+    while not stack.isEmpty() and not problem.isGoalState(root):
+        position, actions = stack.pop()
+        if problem.isGoalState(position):
+            return actions
+        if position not in visited:
+            visited.add(position)
+            for successor in problem.getSuccessors(position):
+                newActions = list(actions)
+                newActions.append(successor[1])
+                stack.push((successor[0], newActions))
 
-    fringe = util.Stack() # stack of tuples
-    visited = set() # set of positions
-
-    fringe.push(Node(root,[]))
-
-    while not fringe.isEmpty():
-        curr = fringe.pop()
-        if problem.isGoalState(curr.position):
-            return curr.actions
-        if curr.position not in visited:
-            visited.add(curr.position)
-            for successor in problem.getSuccessors(curr.position):
-                newList = list(curr.actions)
-                newList.append(successor[1])
-                fringe.push(Node(successor[0],newList))
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
+
     "*** YOUR CODE HERE ***"
-    root= problem.getStartState()
-
-    fringe = util.Queue()
+    root = problem.getStartState()
+    queue = util.Queue()
     visited = set()
+    queue.push((root, []))
+    while not queue.isEmpty():
+        position, actions = queue.pop()
+        if problem.isGoalState(position):
+            return actions
+        if position not in visited:
+            visited.add(position)
+            for successor in problem.getSuccessors(position):
+                addAction = list(actions)
+                addAction.append(successor[1])
+                queue.push((successor[0], addAction))
 
-    fringe.push(Node(root,[]))
-
-    while not fringe.isEmpty():
-        curr = fringe.pop()
-        if problem.isGoalState(curr.position):
-            return curr.actions
-        if curr.position not in visited:
-            visited.add(curr.position)
-            for successor in problem.getSuccessors(curr.position):
-                newList = list(curr.actions)
-                newList.append(successor[1])
-                fringe.push(Node(successor[0],newList))
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
+
     "*** YOUR CODE HERE ***"
-    root= problem.getStartState()
-
-    fringe  = util.PriorityQueue()
+    root = problem.getStartState()
+    queue = util.PriorityQueue()
     visited = set()
+    queue.push((root, []), 0)
+    while not queue.isEmpty():
+        position, actions = queue.pop()
+        if problem.isGoalState(position):
+            return actions
+        if position not in visited:
+            visited.add(position)
+            for successor in problem.getSuccessors(position):
+                addAction = list(actions)
+                addAction.append(successor[1])
+                cost = problem.getCostOfActions(addAction)
+                queue.push((successor[0], addAction), cost)
 
-    fringe.push(Node(root,[]),0)
-
-    while not fringe.isEmpty():
-        curr = fringe.pop()
-        if problem.isGoalState(curr.position):
-            return curr.actions
-        
-        
-        if curr.position not in visited:
-            visited.add(curr.position)
-            for successor in problem.getSuccessors(curr.position):
-                cost = problem.getCostOfActions(curr.actions)
-                newList = list(curr.actions)
-                newList.append(successor[1])
-                fringe.push(Node(successor[0],newList),cost)
 
 def nullHeuristic(state, problem=None):
     """
@@ -161,38 +157,26 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
+
     "*** YOUR CODE HERE ***"
-    root= problem.getStartState()
-
-    fringe  = util.PriorityQueue()
+    root = problem.getStartState()
+    queue = util.PriorityQueue()
     visited = set()
+    queue.push((root, []), 0)
+    while not queue.isEmpty():
+        position, actions = queue.pop()
+        if problem.isGoalState(position):
+            return actions
+        if position not in visited:
+            visited.add(position)
+            for successor in problem.getSuccessors(position):
+                addAction = list(actions)
+                addAction.append(successor[1])
+                queue.push((successor[0], addAction), problem.getCostOfActions(addAction) + heuristic(successor[0], problem))
 
-    fringe.push(Node(root,[]),0)
-
-    while not fringe.isEmpty():
-        curr = fringe.pop()
-        if problem.isGoalState(curr.position):
-            return curr.actions
-        if curr.position not in visited:
-            visited.add(curr.position)
-            for successor in problem.getSuccessors(curr.position):
-                cost = problem.getCostOfActions(curr.actions)
-                newList = list(curr.actions)
-                newList.append(successor[1])
-                fringe.push(Node(successor[0],newList,
-                curr.gn + successor[2], heuristic(successor[0], problem)), 
-                successor[2] + curr.gn + heuristic(successor[0],problem))
-    
-        
-    
-class Node:
-    def __init__(self,position,actions,gn=0, hn=0):
-        self.position = position
-        self.actions = actions
-        self.gn = gn
-        self.hn = hn
 
 # Abbreviations
 bfs = breadthFirstSearch
